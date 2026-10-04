@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Local database credentials (contains the real MySQL password - never commit)
+A2-api/db-config.js
+
+# Submission artefacts and personal documents (not part of the source code)
+A2-Submission/
+PROG2002 A2 Assessment Brief.docx
+PROG2002 A2 Report.docx
+video-script.md
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
