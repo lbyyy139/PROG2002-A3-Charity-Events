@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Events - Hearts United Foundation</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ================= Navigation menu (present on every page) ========= -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="index.html">
+                <span class="logo-mark" aria-hidden="true">&#9829;</span>
+                <span>Hearts <strong>United</strong></span>
+            </a>
+            <nav aria-label="Main navigation">
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="search.html" class="active">Search Events</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="section-head">
+            <h1>Search charity events</h1>
+            <p>Filter current and upcoming events by date, location and category.
+               You may use one or several criteria at once.</p>
+        </div>
+
+        <!-- ================= Search form ================================== -->
+        <form id="search-form" class="search-form" novalidate>
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="search-date">Date</label>
+                    <!-- A date picker is the natural control for date input -->
+                    <input type="date" id="search-date" name="date">
+                </div>
+                <div class="form-field">
+                    <label for="search-location">Location</label>
+                    <!-- Free text suits partial matches like "gold" or "south" -->
+                    <input type="text" id="search-location" name="location"
+                           placeholder="e.g. Southport" maxlength="100">
+                </div>
+                <div class="form-field">
+                    <label for="search-category">Category</label>
+                    <!-- Options are populated from GET /api/categories -->
+                    <select id="search-category" name="categoryId">
+                        <option value="">All categories</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" id="search-button" class="btn btn-primary">Search</button>
+                <button type="button" id="clear-filters" class="btn btn-outline">Clear Filters</button>
+            </div>
+        </form>
+
+        <!-- Error / status message area (DOM manipulation) -->
+        <div id="search-message" class="message" role="alert" hidden></div>
+
+        <!-- ================= Search results =============================== -->
+        <section aria-label="Search results">
+            <h2 id="results-title">Results</h2>
+            <div id="search-results" class="event-grid" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="footer-year">2026</span> Hearts United Foundation &middot; PROG2002 Assignment 2 &middot; Boyu Liu (24832407)</p>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>

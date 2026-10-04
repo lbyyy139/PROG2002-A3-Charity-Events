@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="320" viewBox="0 0 600 320">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d2b5e"/><stop offset="1" stop-color="#2f6fd0"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="320" fill="url(#g)"/>
+  <circle cx="480" cy="60" r="90" fill="#ffffff" opacity="0.08"/>
+  <circle cx="120" cy="280" r="120" fill="#ffffff" opacity="0.06"/>
+  <path d="M0 260 Q150 200 300 250 T600 230 V320 H0 Z" fill="#ffffff" opacity="0.10"/>
+  <g fill="#ffffff" opacity="0.9" transform="translate(230,110)">
+    <circle cx="18" cy="18" r="16"/>
+    <path d="M2 60 L14 46 L20 54 L30 40 L38 52 L48 44 L58 60 Z"/>
+    <rect x="0" y="66" width="80" height="6" rx="3" opacity="0.6"/>
+    <text x="40" y="98" font-family="Segoe UI, Arial" font-size="20" font-weight="bold" text-anchor="middle" fill="#ffd166">FUN RUN</text>
+  </g>
+</svg>

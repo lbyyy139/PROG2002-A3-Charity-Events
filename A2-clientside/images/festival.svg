@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="320" viewBox="0 0 600 320">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d2b5e"/><stop offset="1" stop-color="#2f6fd0"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="320" fill="url(#g)"/>
+  <circle cx="500" cy="70" r="80" fill="#ffd166" opacity="0.15"/>
+  <g transform="translate(200,70)">
+    <path d="M0 40 Q50 -10 100 40 Q100 90 50 120 Q0 90 0 40 Z" fill="#4d8af0"/>
+    <path d="M20 40 Q50 5 80 40" stroke="#ffffff" stroke-width="4" fill="none"/>
+    <rect x="90" y="10" width="12" height="70" rx="6" fill="#ffd166" transform="rotate(20 96 45)"/>
+    <path d="M96 8 L104 24 L88 24 Z" fill="#ffd166"/>
+    <rect x="110" y="50" width="8" height="30" rx="4" fill="#e8f0fd"/>
+  </g>
+  <text x="300" y="240" font-family="Segoe UI, Arial" font-size="20" font-weight="bold" text-anchor="middle" fill="#ffd166">COMMUNITY FESTIVAL</text>
+</svg>

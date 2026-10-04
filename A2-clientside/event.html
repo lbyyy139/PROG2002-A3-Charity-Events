@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - Hearts United Foundation</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ================= Navigation menu (present on every page) ========= -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="index.html">
+                <span class="logo-mark" aria-hidden="true">&#9829;</span>
+                <span>Hearts <strong>United</strong></span>
+            </a>
+            <nav aria-label="Main navigation">
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="search.html">Search Events</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Loading / error message (shown until the event data arrives) -->
+    <main class="container">
+        <div id="event-message" class="message" role="status" hidden></div>
+
+        <!-- The whole detail view is built by event.js via the DOM API -->
+        <article id="event-detail" hidden></article>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="footer-year">2026</span> Hearts United Foundation &middot; PROG2002 Assignment 2 &middot; Boyu Liu (24832407)</p>
+        </div>
+    </footer>
+
+    <!-- ============ "Register" modal (hidden until opened) ================ -->
+    <div id="modal-overlay" class="modal-overlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <h2 id="modal-title">Registration</h2>
+            <p>This feature is currently under construction.</p>
+            <p class="modal-hint">Online registration and ticket purchasing will be
+               available soon. Thank you for your support!</p>
+            <button type="button" id="modal-close" class="btn btn-primary">Close</button>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/event.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hearts United Foundation - Charity Events</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ================= Navigation menu (present on every page) ========= -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="index.html">
+                <span class="logo-mark" aria-hidden="true">&#9829;</span>
+                <span>Hearts <strong>United</strong></span>
+            </a>
+            <nav aria-label="Main navigation">
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="search.html">Search Events</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ================= Hero: organisation info (static content) ======== -->
+    <section class="hero">
+        <div class="container hero-inner">
+            <p class="hero-eyebrow">A registered non-profit serving our city since 2010</p>
+            <h1>Small acts of kindness,<br>big changes for our city.</h1>
+            <p class="hero-lead">
+                Hearts United Foundation brings the community together through charity
+                events that fund local health, education and wellbeing programs.
+                Every ticket you buy is a donation that changes a life.
+            </p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="#events">See our upcoming events</a>
+                <a class="btn btn-outline" href="search.html">Find an event near me</a>
+            </div>
+            <ul class="hero-stats">
+                <li><strong>120+</strong><span>Events hosted</span></li>
+                <li><strong>$1.8m</strong><span>Raised for the community</span></li>
+                <li><strong>35,000</strong><span>Lives impacted</span></li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ================= Mission (static content) ========================= -->
+    <section class="mission-band">
+        <div class="container mission-grid">
+            <div>
+                <h2>Our mission</h2>
+                <p>
+                    We partner with local schools, hospitals and community groups to run
+                    fundraising events - fun runs, galas, auctions and concerts - that
+                    fund meals for families in need, school supplies and medical research.
+                </p>
+            </div>
+            <div>
+                <h2>Get in touch</h2>
+                <address>
+                    <p><strong>Hearts United Foundation</strong><br>
+                    12 Hope Street, Gold Coast QLD 4215</p>
+                    <p>&#9993; info@heartsunited.org.au<br>
+                    &#9742; (07) 5520 1234</p>
+                </address>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= Dynamic event listing (from the API) ============ -->
+    <main class="container" id="events">
+        <div class="section-head">
+            <h2>Current &amp; upcoming charity events</h2>
+            <p>Events are loaded live from our database via the <code>/api/events</code> endpoint.</p>
+        </div>
+
+        <!-- Loading / error message area (DOM manipulation) -->
+        <div id="home-message" class="message" role="status" hidden></div>
+
+        <!-- Event cards are injected here by home.js using the DOM API -->
+        <div id="event-grid" class="event-grid" aria-live="polite"></div>
+    </main>
+
+    <!-- ================= Footer ========================================== -->
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="footer-year">2026</span> Hearts United Foundation &middot; PROG2002 Assignment 2 &middot; Boyu Liu (24832407)</p>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>
