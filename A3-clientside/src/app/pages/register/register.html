@@ -1,0 +1,78 @@
+<main class="container">
+  @if (loading()) {
+    <div class="message info" role="status">Loading event details...</div>
+  } @else if (loadError()) {
+    <div class="message error" role="alert">
+      {{ loadError() }}
+      <p><a routerLink="/search">Go back to the search page</a></p>
+    </div>
+  } @else if (event(); as e) {
+    <nav class="breadcrumb">
+      <a routerLink="/">Home</a> / <a routerLink="/search">Search</a> /
+      <a [routerLink]="['/event', e.event_id]">{{ e.event_name }}</a> / Register
+    </nav>
+
+    <div class="section-head">
+      <h1>Register for this event</h1>
+      <p>Secure your place - your ticket purchase is a donation to the cause.</p>
+    </div>
+
+    @if (success(); as s) {
+      <!-- Confirmation message shown after a successful submission -->
+      <div class="message success" role="status">
+        <h2>🎉 Registration confirmed!</h2>
+        <p>
+          Thank you, <strong>{{ s.name }}</strong>! Your {{ s.tickets }} ticket{{ s.tickets === 1 ? '' : 's' }} for
+          <strong>{{ e.event_name }}</strong> {{ s.tickets === 1 ? 'is' : 'are' }} confirmed.
+          A confirmation has been recorded for {{ e.location }} on {{ fmtDate(e.event_date) }}.
+        </p>
+        <div class="form-actions">
+          <a class="btn btn-primary" [routerLink]="['/event', e.event_id]">Back to event details</a>
+          <a class="btn btn-outline" routerLink="/">Back to home</a>
+        </div>
+      </div>
+    } @else {
+      <!-- Summary of the event the user is registering for -->
+      <div class="event-card" style="max-width: 720px">
+        <div class="card-body">
+          <h3>{{ e.event_name }}</h3>
+          <p class="card-meta"><span class="icon" aria-hidden="true">📅</span> {{ fmtDate(e.event_date) }}</p>
+          <p class="card-meta"><span class="icon" aria-hidden="true">📍</span> {{ e.location }} · {{ e.venue }}</p>
+          <p class="card-meta"><span class="icon" aria-hidden="true">🎟️</span> Ticket price: <strong>{{ fmtMoney(e.ticket_price) }}</strong></p>
+        </div>
+      </div>
+
+      <form class="form-card" style="max-width: 720px" (ngSubmit)="submit()">
+        <div class="form-field">
+          <label for="reg-name">Full name *</label>
+          <input id="reg-name" type="text" name="fullName" [(ngModel)]="fullName" maxlength="100" placeholder="e.g. Emily Carter">
+        </div>
+        <div class="form-field">
+          <label for="reg-email">Email *</label>
+          <input id="reg-email" type="email" name="email" [(ngModel)]="email" placeholder="you@example.com">
+          <p class="form-hint">Used to identify you - the same email can only register once per event.</p>
+        </div>
+        <div class="form-field">
+          <label for="reg-phone">Phone *</label>
+          <input id="reg-phone" type="tel" name="phone" [(ngModel)]="phone" maxlength="30" placeholder="e.g. 0412 345 678">
+        </div>
+        <div class="form-field">
+          <label for="reg-tickets">Number of tickets *</label>
+          <input id="reg-tickets" type="number" name="ticketCount" [(ngModel)]="ticketCount" min="1" max="20" step="1">
+          <p class="form-hint">Between 1 and 20 tickets.</p>
+        </div>
+
+        @if (submitError()) {
+          <div class="message error" role="alert">{{ submitError() }}</div>
+        }
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="submitting()">
+            {{ submitting() ? 'Submitting...' : 'Complete registration' }}
+          </button>
+          <a class="btn btn-outline" [routerLink]="['/event', e.event_id]">Cancel</a>
+        </div>
+      </form>
+    }
+  }
+</main>

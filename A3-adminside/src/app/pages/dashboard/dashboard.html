@@ -1,0 +1,79 @@
+<main class="container">
+  <div class="section-head">
+    <h1>Event management</h1>
+    <p>All charity events - upcoming, past and suspended. Create, update or remove events.</p>
+  </div>
+
+  <div class="form-actions" style="margin: 0 0 8px">
+    <a class="btn btn-primary" routerLink="/new">+ New event</a>
+    <button type="button" class="btn btn-outline" (click)="load()">Refresh</button>
+  </div>
+
+  @if (notice()) {
+    <div class="message" [class.info]="noticeType() === 'info'"
+         [class.error]="noticeType() === 'error'"
+         [class.success]="noticeType() === 'success'" role="status">
+      {{ notice() }}
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="message info" role="status">Loading events...</div>
+  } @else if (error()) {
+    <div class="message error" role="alert">{{ error() }}</div>
+  } @else {
+    <div class="table-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Event</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Goal / Raised</th>
+            <th>Registrations</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (event of events(); track event.event_id) {
+            <tr>
+              <td>{{ event.event_id }}</td>
+              <td><strong>{{ event.event_name }}</strong><br>
+                <small>{{ event.org_name }}</small></td>
+              <td><span class="status-pill"
+                        [class.status-upcoming]="statusOf(event) === 'Upcoming'"
+                        [class.status-past]="statusOf(event) === 'Past'"
+                        [class.status-suspended]="statusOf(event) === 'Suspended'">
+                  {{ statusOf(event) }}</span></td>
+              <td>{{ fmtDate(event.event_date) }}</td>
+              <td>{{ event.location }}<br><small>{{ event.venue }}</small></td>
+              <td>{{ event.category_name }}</td>
+              <td>{{ fmtMoney(event.ticket_price) }}</td>
+              <td>{{ fmtMoney(event.raised_amount) }} / {{ fmtMoney(event.goal_amount) }}</td>
+              <td><span class="tickets-pill">{{ event.registration_count || 0 }}</span></td>
+              <td>
+                <div class="actions">
+                  <a class="btn btn-small btn-outline" [routerLink]="['/edit', event.event_id]">Edit</a>
+                  @if (confirmId() === event.event_id) {
+                    <button type="button" class="btn btn-small btn-danger" (click)="deleteRequest(event)">
+                      Confirm delete
+                    </button>
+                    <button type="button" class="btn btn-small btn-outline" (click)="cancelDelete()">Cancel</button>
+                  } @else {
+                    <button type="button" class="btn btn-small btn-danger" (click)="deleteRequest(event)">
+                      Delete
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</main>

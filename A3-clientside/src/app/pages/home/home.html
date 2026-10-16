@@ -1,0 +1,66 @@
+<!-- Hero: organisation info (static content) -->
+<section class="hero">
+  <div class="container hero-inner">
+    <p class="hero-eyebrow">A registered non-profit serving our city since 2010</p>
+    <h1>Small acts of kindness,<br>big changes for our city.</h1>
+    <p class="hero-lead">
+      Hearts United Foundation brings the community together through charity
+      events that fund local health, education and wellbeing programs.
+      Every ticket you buy is a donation that changes a life.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#events">See our upcoming events</a>
+      <a class="btn btn-outline" routerLink="/search">Find an event near me</a>
+    </div>
+    <ul class="hero-stats">
+      <li><strong>120+</strong><span>Events hosted</span></li>
+      <li><strong>$1.8m</strong><span>Raised for the community</span></li>
+      <li><strong>35,000</strong><span>Lives impacted</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- Mission (static content) -->
+<section class="mission-band">
+  <div class="container mission-grid">
+    <div>
+      <h2>Our mission</h2>
+      <p>
+        We partner with local schools, hospitals and community groups to run
+        fundraising events - fun runs, galas, auctions and concerts - that
+        fund meals for families in need, school supplies and medical research.
+      </p>
+    </div>
+    <div>
+      <h2>Get in touch</h2>
+      <address>
+        <p><strong>Hearts United Foundation</strong><br>
+          12 Hope Street, Gold Coast QLD 4215</p>
+        <p>&#9993; info&#64;heartsunited.org.au<br>
+          &#9742; (07) 5520 1234</p>
+      </address>
+    </div>
+  </div>
+</section>
+
+<!-- Dynamic event listing (from the API) -->
+<main class="container" id="events">
+  <div class="section-head">
+    <h2>Current &amp; upcoming charity events</h2>
+    <p>Events are loaded live from our database via the <code>/api/events</code> endpoint.</p>
+  </div>
+
+  @if (loading()) {
+    <div class="message info" role="status">Loading events...</div>
+  } @else if (error()) {
+    <div class="message error" role="alert">{{ error() }}</div>
+  } @else if (events().length === 0) {
+    <div class="message info">No current or upcoming events at the moment. Please check back soon!</div>
+  } @else {
+    <div class="event-grid" aria-live="polite">
+      @for (event of events(); track event.event_id) {
+        <app-event-card [event]="event" />
+      }
+    </div>
+  }
+</main>

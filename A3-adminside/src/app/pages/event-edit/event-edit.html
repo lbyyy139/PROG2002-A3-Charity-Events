@@ -1,0 +1,48 @@
+<main class="container">
+  @if (loading()) {
+    <div class="message info" role="status">Loading event...</div>
+  } @else if (loadError()) {
+    <div class="message error" role="alert">
+      {{ loadError() }}
+      <p><a routerLink="/">← Back to the event list</a></p>
+    </div>
+  } @else if (model(); as m) {
+    <nav class="section-head">
+      <h1>Edit event #{{ m.event_id }}</h1>
+      <p><a routerLink="/">← Back to the event list</a></p>
+    </nav>
+
+    <app-event-form [model]="m" [isEdit]="true" [saving]="saving()" [error]="error()" (save)="save($event)" />
+
+    <!-- Registrations recorded for this event -->
+    @if (model(); as m2) {
+      <section class="registrations-card">
+        <h2>Registrations for this event</h2>
+        <p class="reg-summary">
+          {{ m2.registrations?.length || 0 }} registration(s), sorted by the latest first.
+          Events with registrations cannot be deleted.
+        </p>
+        @if (m2.registrations && m2.registrations.length > 0) {
+          <table class="reg-table">
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Phone</th><th>Tickets</th><th>Registered on</th></tr>
+            </thead>
+            <tbody>
+              @for (reg of m2.registrations; track reg.registration_id) {
+                <tr>
+                  <td>{{ reg.full_name }}</td>
+                  <td>{{ reg.email }}</td>
+                  <td>{{ reg.phone }}</td>
+                  <td><span class="tickets-pill">{{ reg.ticket_count }}</span></td>
+                  <td>{{ fmtDate(reg.registration_date) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <div class="message info">No registrations for this event yet.</div>
+        }
+      </section>
+    }
+  }
+</main>

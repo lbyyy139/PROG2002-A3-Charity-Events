@@ -1,0 +1,8 @@
+<main class="container">
+  <nav class="section-head">
+    <h1>Create a new charity event</h1>
+    <p><a routerLink="/">← Back to the event list</a></p>
+  </nav>
+
+  <app-event-form [model]="model" [saving]="saving()" [error]="error()" (save)="save($event)" />
+</main>

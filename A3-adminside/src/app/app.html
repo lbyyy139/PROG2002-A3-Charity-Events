@@ -1,0 +1,26 @@
+<!-- Navigation menu (present on every page) -->
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" routerLink="/">
+      <span class="logo-mark" aria-hidden="true">&#9873;</span>
+      <span>Hearts <strong>United</strong> Admin</span>
+      <span class="admin-tag">Staff</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <ul class="nav-menu">
+        <li><a routerLink="/" routerLinkActive="active">Events</a></li>
+        <li><a routerLink="/new" routerLinkActive="active">New Event</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- Routed page content -->
+<router-outlet />
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; {{ year }} Hearts United Foundation &middot; PROG2002 Assignment 3 (admin-side) &middot; Boyu Liu (24832407)</p>
+  </div>
+</footer>

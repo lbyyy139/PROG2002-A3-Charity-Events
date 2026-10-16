@@ -1,0 +1,21 @@
+<article class="event-card">
+  <a class="card-image" [routerLink]="['/event', event().event_id]">
+    <img [src]="event().image_url || 'images/festival.svg'" [alt]="event().event_name">
+    <span class="badge">{{ event().category_name }}</span>
+  </a>
+  <div class="card-body">
+    <h3><a [routerLink]="['/event', event().event_id]">{{ event().event_name }}</a></h3>
+    <p class="card-meta"><span class="icon" aria-hidden="true">📅</span> {{ fmtDate(event().event_date) }}</p>
+    <p class="card-meta"><span class="icon" aria-hidden="true">📍</span> {{ event().location }} · {{ event().venue }}</p>
+    <div class="card-progress">
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="progress()"></div>
+      </div>
+      <p class="progress-text">{{ progress() }}% of {{ fmtMoney(event().goal_amount) }} goal raised</p>
+    </div>
+    <div class="card-footer">
+      <span class="price">{{ fmtMoney(event().ticket_price) }}</span>
+      <a class="btn btn-small btn-primary" [routerLink]="['/event', event().event_id]">View details →</a>
+    </div>
+  </div>
+</article>

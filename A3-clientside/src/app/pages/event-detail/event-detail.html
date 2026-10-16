@@ -1,0 +1,108 @@
+<main class="container">
+  @if (loading()) {
+    <div class="message info" role="status">Loading event details...</div>
+  } @else if (error()) {
+    <div class="message error" role="alert">
+      {{ error() }}
+      <p><a routerLink="/search">Go back to the search page</a></p>
+    </div>
+  } @else if (event(); as e) {
+    <nav class="breadcrumb">
+      <a routerLink="/">Home</a> / <a routerLink="/search">Search</a> / {{ e.event_name }}
+    </nav>
+
+    <div class="detail-hero">
+      <img [src]="e.image_url || 'images/festival.svg'" [alt]="e.event_name">
+      <div class="detail-hero-text">
+        <span class="badge badge-large">{{ e.category_name }}</span>
+        <h1>{{ e.event_name }}</h1>
+        <p class="detail-org">Hosted by <strong>{{ e.org_name }}</strong></p>
+      </div>
+    </div>
+
+    <div class="detail-layout">
+      <div class="detail-main">
+        <h2>About this event</h2>
+        <p>{{ e.description }}</p>
+        <h2>The cause we support</h2>
+        <p class="purpose-box">{{ e.purpose }}</p>
+      </div>
+
+      <aside class="detail-side">
+        <ul class="info-list">
+          <li><span class="icon">📅</span><div><strong>Starts</strong>{{ fmtDate(e.event_date) }}</div></li>
+          @if (e.end_date) {
+            <li><span class="icon">⏳</span><div><strong>Ends</strong>{{ fmtDate(e.end_date) }}</div></li>
+          }
+          <li><span class="icon">📍</span><div><strong>Venue</strong>{{ e.venue }}<br>{{ e.location }}</div></li>
+          <li><span class="icon">🎟️</span><div><strong>Ticket</strong>{{ fmtMoney(e.ticket_price) }}
+            @if (isFree(e.ticket_price)) { <small>(donations welcome)</small> }
+          </div></li>
+        </ul>
+
+        <!-- Weather forecast for the event day (Open-Meteo API) -->
+        <div class="weather-card">
+          <h2>Weather on the day</h2>
+          @if (weather(); as w) {
+            <div class="weather-main">
+              <span class="weather-icon" aria-hidden="true">{{ w.icon }}</span>
+              <div>
+                <div class="weather-temp">{{ w.min }}°C – {{ w.max }}°C</div>
+                <div class="weather-desc">{{ w.description }}</div>
+              </div>
+            </div>
+            <p class="weather-note">Forecast by Open-Meteo for {{ e.location }}.</p>
+          } @else {
+            <p class="weather-note">{{ weatherNote() }}</p>
+          }
+        </div>
+
+        <div class="goal-card">
+          <h2>Fundraising goal</h2>
+          <div class="progress-track progress-large">
+            <div class="progress-fill" [style.width.%]="progress()"></div>
+          </div>
+          <p class="goal-figures"><strong>{{ fmtMoney(e.raised_amount) }}</strong> raised of {{ fmtMoney(e.goal_amount) }} goal</p>
+          <p class="goal-percent">{{ progress() }}% funded</p>
+        </div>
+
+        <a class="btn btn-primary btn-block" [routerLink]="['/event', e.event_id, 'register']">Register for this event</a>
+        <p class="ticket-note">Your ticket purchase is a donation to the cause.</p>
+      </aside>
+    </div>
+
+    <!-- Registrations list (A3 new feature, latest purchase first) -->
+    <section class="registrations-section">
+      <div class="registrations-card">
+        <h2>Who is coming</h2>
+        <p class="reg-summary">
+          {{ e.registrations?.length || 0 }} registration(s) ·
+          {{ totalTickets() }} ticket(s) purchased ·
+          sorted by the latest date first
+        </p>
+        @if (e.registrations && e.registrations.length > 0) {
+          <table class="reg-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Tickets</th>
+                <th>Registered on</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (reg of e.registrations; track reg.registration_id) {
+                <tr>
+                  <td>{{ reg.full_name }}</td>
+                  <td><span class="tickets-pill">{{ reg.ticket_count }}</span></td>
+                  <td>{{ fmtDate(reg.registration_date) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <div class="message info">No registrations yet - be the first to register!</div>
+        }
+      </div>
+    </section>
+  }
+</main>

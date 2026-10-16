@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="320" viewBox="0 0 600 320">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d2b5e"/><stop offset="1" stop-color="#1a4fa0"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="320" fill="url(#g)"/>
+  <circle cx="500" cy="80" r="100" fill="#4d8af0" opacity="0.15"/>
+  <g transform="translate(215,80)">
+    <rect x="10" y="0" width="110" height="90" rx="6" fill="#e8f0fd"/>
+    <rect x="20" y="10" width="90" height="70" rx="4" fill="#2f6fd0" opacity="0.25"/>
+    <path d="M-10 30 Q30 -10 65 30 Q100 70 140 30" stroke="#ffd166" stroke-width="4" fill="none"/>
+    <circle cx="65" cy="48" r="8" fill="#4d8af0"/>
+    <path d="M30 118 L46 92 L62 118 Z" fill="#ffd166"/>
+    <text x="65" y="145" font-family="Segoe UI, Arial" font-size="20" font-weight="bold" text-anchor="middle" fill="#ffd166">SILENT AUCTION</text>
+  </g>
+</svg>

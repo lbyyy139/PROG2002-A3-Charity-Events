@@ -1,0 +1,98 @@
+<form class="form-card" (ngSubmit)="submit()">
+  <div class="form-grid">
+    <div class="form-field full">
+      <label for="f-name">Event name *</label>
+      <input id="f-name" type="text" name="eventName" maxlength="150"
+             [(ngModel)]="model().event_name" placeholder="e.g. Hope City Fun Run 5K">
+    </div>
+    <div class="form-field">
+      <label for="f-date">Starts *</label>
+      <input id="f-date" type="datetime-local" name="eventDate"
+             [(ngModel)]="model().event_date">
+    </div>
+    <div class="form-field">
+      <label for="f-end">Ends (optional)</label>
+      <input id="f-end" type="datetime-local" name="endDate"
+             [(ngModel)]="model().end_date">
+    </div>
+    <div class="form-field">
+      <label for="f-location">Location (city / suburb) *</label>
+      <input id="f-location" type="text" name="location" maxlength="100"
+             [(ngModel)]="model().location" placeholder="e.g. Southport">
+    </div>
+    <div class="form-field">
+      <label for="f-venue">Venue *</label>
+      <input id="f-venue" type="text" name="venue" maxlength="150"
+             [(ngModel)]="model().venue" placeholder="e.g. Broadwater Parklands, Southport">
+    </div>
+    <div class="form-field full">
+      <label for="f-desc">Description *</label>
+      <textarea id="f-desc" name="description" [(ngModel)]="model().description"></textarea>
+    </div>
+    <div class="form-field full">
+      <label for="f-purpose">Purpose (the cause) *</label>
+      <textarea id="f-purpose" name="purpose" [(ngModel)]="model().purpose"></textarea>
+    </div>
+    <div class="form-field">
+      <label for="f-price">Ticket price ($, 0 = free)</label>
+      <input id="f-price" type="number" name="ticketPrice" min="0" step="0.01"
+             [(ngModel)]="model().ticket_price">
+    </div>
+    <div class="form-field">
+      <label for="f-goal">Fundraising goal ($)</label>
+      <input id="f-goal" type="number" name="goalAmount" min="0" step="0.01"
+             [(ngModel)]="model().goal_amount">
+    </div>
+    <div class="form-field">
+      <label for="f-raised">Raised so far ($)</label>
+      <input id="f-raised" type="number" name="raisedAmount" min="0" step="0.01"
+             [(ngModel)]="model().raised_amount">
+    </div>
+    <div class="form-field">
+      <label for="f-image">Image URL (optional)</label>
+      <input id="f-image" type="text" name="imageUrl" maxlength="255"
+             [(ngModel)]="model().image_url" placeholder="images/festival.svg">
+    </div>
+    <div class="form-field">
+      <label for="f-lat">Latitude (for the weather forecast)</label>
+      <input id="f-lat" type="text" name="latitude" [(ngModel)]="model().latitude" placeholder="e.g. -27.9683">
+    </div>
+    <div class="form-field">
+      <label for="f-lng">Longitude (for the weather forecast)</label>
+      <input id="f-lng" type="text" name="longitude" [(ngModel)]="model().longitude" placeholder="e.g. 153.4100">
+    </div>
+    <div class="form-field">
+      <label for="f-org">Organisation *</label>
+      <select id="f-org" name="orgId" [(ngModel)]="model().org_id">
+        <option [ngValue]="undefined" disabled>Select an organisation</option>
+        @for (org of organisations(); track org.org_id) {
+          <option [ngValue]="org.org_id">{{ org.org_name }}</option>
+        }
+      </select>
+    </div>
+    <div class="form-field">
+      <label for="f-cat">Category *</label>
+      <select id="f-cat" name="categoryId" [(ngModel)]="model().category_id">
+        <option [ngValue]="undefined" disabled>Select a category</option>
+        @for (category of categories(); track category.category_id) {
+          <option [ngValue]="category.category_id">{{ category.category_name }}</option>
+        }
+      </select>
+    </div>
+    <div class="checkbox-field full">
+      <input id="f-suspended" type="checkbox" name="isSuspended"
+             [ngModel]="model().is_suspended == 1" (ngModelChange)="model().is_suspended = $event ? 1 : 0">
+      <label for="f-suspended">Suspended (hidden from the public website)</label>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="message error" role="alert">{{ error() }}</div>
+  }
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary" [disabled]="saving()">
+      {{ saving() ? 'Saving...' : (isEdit() ? 'Save changes' : 'Create event') }}
+    </button>
+  </div>
+</form>
