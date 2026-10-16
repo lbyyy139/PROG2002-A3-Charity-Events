@@ -58,7 +58,8 @@ export class EventEdit implements OnInit {
           longitude: event.longitude,
           org_id: event.org_id,
           category_id: event.category_id,
-          is_suspended: event.is_suspended
+          is_suspended: event.is_suspended,
+          registrations: event.registrations
         });
         this.loading.set(false);
       },
