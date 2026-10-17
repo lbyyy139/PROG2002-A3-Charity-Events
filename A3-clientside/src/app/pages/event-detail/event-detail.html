@@ -66,8 +66,12 @@
           <p class="goal-percent">{{ progress() }}% funded</p>
         </div>
 
-        <a class="btn btn-primary btn-block" [routerLink]="['/event', e.event_id, 'register']">Register for this event</a>
-        <p class="ticket-note">Your ticket purchase is a donation to the cause.</p>
+        @if (registrationOpen(e)) {
+          <a class="btn btn-primary btn-block" [routerLink]="['/event', e.event_id, 'register']">Register for this event</a>
+          <p class="ticket-note">Your ticket purchase is a donation to the cause.</p>
+        } @else {
+          <p class="message info">Registration is closed for this event.</p>
+        }
       </aside>
     </div>
 

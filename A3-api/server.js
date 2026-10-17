@@ -6,6 +6,7 @@
  *   GET    /api/events/all                  - every event (admin list)
  *   GET    /api/events/search               - filter by date/location/category
  *   GET    /api/events/:id                  - one event + its registrations
+ *   GET    /api/admin/events/:id            - admin details, including suspended events
  *   POST   /api/events                      - create an event (admin)
  *   PUT    /api/events/:id                  - update an event (admin)
  *   DELETE /api/events/:id                  - delete an event (blocked if registrations exist)
@@ -17,7 +18,7 @@ const express = require('express');
 const { query } = require('./event_db');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Parse JSON request bodies (POST / PUT).
 app.use(express.json());
@@ -67,6 +68,23 @@ const EVENT_SELECT = `
 const DATE_TIME_PATTERN = /^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2})?)?$/;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+function isBlank(value) {
+    return value === undefined || value === null || String(value).trim() === '';
+}
+
+// Validate the actual calendar date, not just its shape (e.g. reject 30 February).
+// Values submitted by the admin form represent Brisbane local time, without Z.
+function normaliseDateTime(value) {
+    if (typeof value !== 'string' || !DATE_TIME_PATTERN.test(value)) return null;
+    const normalised = value.replace(' ', 'T');
+    const full = normalised.length === 10 ? normalised + 'T00:00:00'
+        : normalised.length === 16 ? normalised + ':00' : normalised;
+    const date = new Date(full + 'Z');
+    if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0, 19) !== full) return null;
+    if (Number(full.slice(0, 4)) < 1000) return null; // MySQL DATETIME range
+    return full.replace('T', ' ');
+}
+
 /** Validates the request body of an event create/update call.
  *  Returns an array of error messages (empty = valid). */
 function validateEvent(body) {
@@ -77,28 +95,37 @@ function validateEvent(body) {
             errors.push(`Field "${field}" is required.`);
         }
     }
-    if (body.event_date && !DATE_TIME_PATTERN.test(String(body.event_date))) {
-        errors.push('Field "event_date" must be a date in YYYY-MM-DD or YYYY-MM-DD HH:MM format.');
-    }
-    if (body.end_date && body.end_date !== '' && !DATE_TIME_PATTERN.test(String(body.end_date))) {
-        errors.push('Field "end_date" must be a date in YYYY-MM-DD or YYYY-MM-DD HH:MM format.');
+    const start = normaliseDateTime(body.event_date);
+    const end = isBlank(body.end_date) ? null : normaliseDateTime(body.end_date);
+    if (!start) errors.push('Please provide a valid event start date and time.');
+    if (!isBlank(body.end_date) && !end) errors.push('Please provide a valid event end date and time.');
+    if (start && end && end <= start) errors.push('The end must be after the start.');
+    for (const [field, max] of Object.entries({ event_name: 150, location: 100, venue: 150, image_url: 255 })) {
+        if (!isBlank(body[field]) && (typeof body[field] !== 'string' || body[field].trim().length > max)) {
+            errors.push(`Field "${field}" must be text of at most ${max} characters.`);
+        }
     }
     for (const field of ['ticket_price', 'goal_amount', 'raised_amount']) {
         const value = body[field];
-        if (value !== undefined && value !== '' && (isNaN(Number(value)) || Number(value) < 0)) {
-            errors.push(`Field "${field}" must be a non-negative number.`);
+        const max = field === 'ticket_price' ? 99999999.99 : 9999999999.99;
+        if (!isBlank(value) && (!Number.isFinite(Number(value)) || Number(value) < 0 || Number(value) > max)) {
+            errors.push(`Field "${field}" must be a number between 0 and ${max}.`);
         }
     }
     for (const field of ['org_id', 'category_id']) {
-        if (body[field] !== undefined && !/^\d+$/.test(String(body[field]))) {
-            errors.push(`Field "${field}" must be a number.`);
+        if (!Number.isSafeInteger(Number(body[field])) || Number(body[field]) < 1) {
+            errors.push(`Field "${field}" must be a positive whole number.`);
         }
     }
-    if (body.latitude !== undefined && body.latitude !== '' && isNaN(Number(body.latitude))) {
-        errors.push('Field "latitude" must be a number.');
+    for (const [field, max] of [['latitude', 90], ['longitude', 180]]) {
+        const value = body[field];
+        if (!isBlank(value) && (!Number.isFinite(Number(value)) || Math.abs(Number(value)) > max)) {
+            errors.push(`Field "${field}" must be a number between -${max} and ${max}.`);
+        }
     }
-    if (body.longitude !== undefined && body.longitude !== '' && isNaN(Number(body.longitude))) {
-        errors.push('Field "longitude" must be a number.');
+    if (isBlank(body.latitude) !== isBlank(body.longitude)) errors.push('Provide both coordinates, or leave both empty.');
+    if (!isBlank(body.is_suspended) && ![0, 1, false, true].includes(body.is_suspended)) {
+        errors.push('Field "is_suspended" must be 0 or 1.');
     }
     return errors;
 }
@@ -111,8 +138,8 @@ function eventColumns(body) {
                   'org_id', 'category_id', 'is_suspended'],
         values: [
             String(body.event_name).trim(),
-            body.event_date,
-            body.end_date ? body.end_date : null,
+            normaliseDateTime(body.event_date),
+            isBlank(body.end_date) ? null : normaliseDateTime(body.end_date),
             String(body.location).trim(),
             String(body.venue).trim(),
             String(body.description).trim(),
@@ -121,8 +148,8 @@ function eventColumns(body) {
             body.goal_amount !== undefined && body.goal_amount !== '' ? Number(body.goal_amount) : 0.00,
             body.raised_amount !== undefined && body.raised_amount !== '' ? Number(body.raised_amount) : 0.00,
             body.image_url ? String(body.image_url).trim() : null,
-            body.latitude !== undefined && body.latitude !== '' ? Number(body.latitude) : null,
-            body.longitude !== undefined && body.longitude !== '' ? Number(body.longitude) : null,
+            isBlank(body.latitude) ? null : Number(body.latitude),
+            isBlank(body.longitude) ? null : Number(body.longitude),
             Number(body.org_id),
             Number(body.category_id),
             body.is_suspended !== undefined ? (body.is_suspended ? 1 : 0) : 0
@@ -181,7 +208,7 @@ app.get('/api/events/search', async (req, res) => {
 
         // Server-side input validation: invalid input -> 400, no query runs.
         const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-        if (date && !DATE_PATTERN.test(date)) {
+        if (date && (typeof date !== 'string' || !DATE_PATTERN.test(date) || !normaliseDateTime(date))) {
             return res.status(400).json({ error: 'Invalid date format. Expected YYYY-MM-DD.' });
         }
         if (location && location.length > 100) {
@@ -192,7 +219,7 @@ app.get('/api/events/search', async (req, res) => {
         }
 
         // Dynamic WHERE clause: all criteria are optional, combined with AND.
-        let sql = EVENT_SELECT + ' WHERE e.is_suspended = 0';
+        let sql = EVENT_SELECT + ' WHERE e.is_suspended = 0 AND e.event_date >= NOW()';
         const params = [];
 
         if (date) {
@@ -225,42 +252,48 @@ app.get('/api/events/search', async (req, res) => {
 // GET /api/events/:id - full details of one event + its registrations,
 // sorted by the latest registration date first (A3 requirement).
 // ---------------------------------------------------------------------------
-app.get('/api/events/:id', async (req, res) => {
-    try {
-        const eventId = req.params.id;
+function eventDetails(includeSuspended) {
+    return async (req, res) => {
+        try {
+            const eventId = req.params.id;
 
-        if (!/^\d+$/.test(eventId)) {
-            return res.status(400).json({ error: 'Invalid event id.' });
+            if (!/^\d+$/.test(eventId)) {
+                return res.status(400).json({ error: 'Invalid event id.' });
+            }
+
+            const rows = await query(
+                EVENT_SELECT + ' WHERE e.event_id = ?' +
+                    (includeSuspended ? '' : ' AND e.is_suspended = 0'),
+                [eventId]
+            );
+
+            if (rows.length === 0) {
+                return res.status(404).json({ error: 'Event not found or no longer available.' });
+            }
+
+            const event = rows[0];
+
+            // Complete list of registrations for this event, latest purchase first.
+            event.registrations = await query(
+                `SELECT registration_id, full_name, email, phone, ticket_count, registration_date
+                 FROM registrations
+                 WHERE event_id = ?
+                 ORDER BY registration_date DESC, registration_id DESC`,
+                [eventId]
+            );
+
+            res.json(event);
+        } catch (err) {
+            console.error('GET /api/events/:id failed:', err.message);
+            res.status(500).json({ error: 'Failed to retrieve the event.' });
         }
+    };
+}
 
-        const rows = await query(
-            EVENT_SELECT + `
-            WHERE e.event_id = ?
-              AND e.is_suspended = 0`,
-            [eventId]
-        );
-
-        if (rows.length === 0) {
-            return res.status(404).json({ error: 'Event not found or no longer available.' });
-        }
-
-        const event = rows[0];
-
-        // Complete list of registrations for this event, latest purchase first.
-        event.registrations = await query(
-            `SELECT registration_id, full_name, email, phone, ticket_count, registration_date
-             FROM registrations
-             WHERE event_id = ?
-             ORDER BY registration_date DESC, registration_id DESC`,
-            [eventId]
-        );
-
-        res.json(event);
-    } catch (err) {
-        console.error('GET /api/events/:id failed:', err.message);
-        res.status(500).json({ error: 'Failed to retrieve the event.' });
-    }
-});
+app.get('/api/events/:id', eventDetails(false));
+// Authentication is outside this assessment's scope. This is the admin data
+// route, not a security boundary; public pages still use the filtered route.
+app.get('/api/admin/events/:id', eventDetails(true));
 
 // ---------------------------------------------------------------------------
 // POST /api/events - insert a new charity event (admin-side "New" form).
@@ -377,6 +410,11 @@ app.post('/api/events/:id/registrations', async (req, res) => {
         if (!body.phone || String(body.phone).trim() === '') {
             errors.push('Field "phone" is required.');
         }
+        for (const [field, max] of [['full_name', 100], ['email', 100], ['phone', 30]]) {
+            if (!isBlank(body[field]) && (typeof body[field] !== 'string' || body[field].trim().length > max)) {
+                errors.push(`Field "${field}" must be text of at most ${max} characters.`);
+            }
+        }
         const tickets = Number(body.ticket_count);
         if (!Number.isInteger(tickets) || tickets < 1 || tickets > 20) {
             errors.push('Field "ticket_count" must be a whole number between 1 and 20.');
@@ -449,6 +487,10 @@ app.get('/api/organisations', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Charity Events API is running at http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`Charity Events API is running at http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;

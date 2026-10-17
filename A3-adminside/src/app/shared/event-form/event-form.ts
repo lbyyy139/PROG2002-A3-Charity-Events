@@ -2,6 +2,7 @@ import { Component, OnInit, inject, input, output, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { Category, CharityEvent, Organisation } from '../../models';
+import { validateEventForm } from '../../event-validation';
 
 /**
  * Shared event form used by both the "New event" and "Edit event" pages.
@@ -28,6 +29,7 @@ export class EventForm implements OnInit {
 
   protected readonly categories = signal<Category[]>([]);
   protected readonly organisations = signal<Organisation[]>([]);
+  protected readonly validationError = signal('');
 
   ngOnInit(): void {
     this.api.getCategories().subscribe({
@@ -41,6 +43,9 @@ export class EventForm implements OnInit {
   }
 
   submit(): void {
+    const errors = validateEventForm(this.model());
+    this.validationError.set(errors.join(' '));
+    if (errors.length || this.saving()) return;
     this.save.emit({
       event_name: this.model().event_name,
       event_date: this.model().event_date,

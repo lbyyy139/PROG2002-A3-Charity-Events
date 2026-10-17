@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { Category, CharityEvent } from '../../models';
 import { EventCard } from '../../shared/event-card/event-card';
+import { eventDateKey } from '../../formatters';
 
 /**
  * Search page: filter active events by date, location and category.
@@ -56,10 +57,8 @@ export class Search implements OnInit {
     // Client-side validation: only current & upcoming events are shown,
     // so the date cannot be in the past.
     if (date) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const picked = new Date(date + 'T00:00:00');
-      if (picked < today) {
+      const today = eventDateKey(new Date().toISOString());
+      if (date < today) {
         this.showMessage('The search date cannot be in the past. Please choose today or a later date.', 'error');
         return;
       }

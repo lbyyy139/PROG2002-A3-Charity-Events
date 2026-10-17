@@ -31,6 +31,11 @@
           <a class="btn btn-outline" routerLink="/">Back to home</a>
         </div>
       </div>
+    } @else if (!registrationOpen(e)) {
+      <div class="message info" role="status">
+        Registration is closed for this event.
+        <a [routerLink]="['/event', e.event_id]">Back to event details</a>
+      </div>
     } @else {
       <!-- Summary of the event the user is registering for -->
       <div class="event-card" style="max-width: 720px">
@@ -49,7 +54,7 @@
         </div>
         <div class="form-field">
           <label for="reg-email">Email *</label>
-          <input id="reg-email" type="email" name="email" [(ngModel)]="email" placeholder="you@example.com">
+          <input id="reg-email" type="email" name="email" maxlength="100" [(ngModel)]="email" placeholder="you@example.com">
           <p class="form-hint">Used to identify you - the same email can only register once per event.</p>
         </div>
         <div class="form-field">

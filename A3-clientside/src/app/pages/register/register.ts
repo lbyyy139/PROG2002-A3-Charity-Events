@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { CharityEvent } from '../../models';
-import { formatDate, formatMoney } from '../../formatters';
+import { formatDate, formatMoney, registrationOpen } from '../../formatters';
 
 /**
  * Registration page (A3 new page): the user registers for a selected event.
@@ -36,6 +36,7 @@ export class Register implements OnInit {
 
   protected readonly fmtDate = formatDate;
   protected readonly fmtMoney = formatMoney;
+  protected readonly registrationOpen = registrationOpen;
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id') ?? '';
@@ -61,13 +62,18 @@ export class Register implements OnInit {
   /** Validates the form and submits the registration to the API. */
   submit(): void {
     this.submitError.set('');
+    const event = this.event();
+    if (!event || !registrationOpen(event)) {
+      this.submitError.set('Registration is closed for this event.');
+      return;
+    }
 
     // Client-side validation (the API validates again - never trust the client).
     if (this.fullName.trim() === '') {
       this.submitError.set('Please enter your full name.');
       return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email.trim())) {
+    if (this.email.trim().length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email.trim())) {
       this.submitError.set('Please enter a valid email address.');
       return;
     }

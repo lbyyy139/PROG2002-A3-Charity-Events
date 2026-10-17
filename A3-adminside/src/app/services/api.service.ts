@@ -19,9 +19,9 @@ export class ApiService {
             .pipe(catchError(this.handleError));
     }
 
-    /** GET /api/events/:id - one event including its registrations. */
+    /** Admin details include suspended events so staff can edit or restore them. */
     getEvent(id: number | string): Observable<CharityEvent> {
-        return this.http.get<CharityEvent>(`${this.base}/api/events/${encodeURIComponent(String(id))}`)
+        return this.http.get<CharityEvent>(`${this.base}/api/admin/events/${encodeURIComponent(String(id))}`)
             .pipe(catchError(this.handleError));
     }
 

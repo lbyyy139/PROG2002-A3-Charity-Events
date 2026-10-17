@@ -56,7 +56,7 @@
             <th>Location</th>
             <th>Category</th>
             <th>Price</th>
-            <th>Goal / Raised</th>
+            <th>Raised / Goal</th>
             <th>Registrations</th>
             <th>Actions</th>
           </tr>
@@ -76,7 +76,7 @@
               <td>{{ event.location }}<br><small>{{ event.venue }}</small></td>
               <td>{{ event.category_name }}</td>
               <td>{{ fmtMoney(event.ticket_price) }}</td>
-              <td>{{ fmtMoney(event.raised_amount) }} / {{ fmtMoney(event.goal_amount) }}</td>
+              <td>{{ fmtMoney(event.raised_amount, false) }} / {{ fmtMoney(event.goal_amount, false) }}</td>
               <td><span class="tickets-pill">{{ event.registration_count || 0 }}</span></td>
               <td>
                 <div class="actions">

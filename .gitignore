@@ -26,6 +26,8 @@ a3-deployment-guide.md
 api-upload.zip
 deploy/
 deploy-package/
+deploy-*/
+reg.yaml
 
 # Unpacked docx working folders
 *_unpacked/

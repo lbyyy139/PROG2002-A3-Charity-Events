@@ -26,7 +26,12 @@ try {
     // No local config file - fall back to the placeholder configuration above
 }
 
-const dbConfig = Object.assign({}, defaultConfig, localConfig);
+// Event DATETIME values are wall-clock times in Queensland (AEST, UTC+10).
+// Force the same interpretation regardless of the Node host's local timezone.
+const dbConfig = Object.assign({}, defaultConfig, localConfig, {
+    timezone: '+10:00',
+    dateStrings: false
+});
 
 // A pool serves several API requests without opening a new connection each time.
 const pool = mysql.createPool(dbConfig);
@@ -36,8 +41,16 @@ const pool = mysql.createPool(dbConfig);
  * Values are bound with ? placeholders, so this is safe from SQL injection.
  */
 async function query(sql, params) {
-    const [rows] = await pool.execute(sql, params || []);
-    return rows;
+    const connection = await pool.getConnection();
+    try {
+        // Align NOW() and TIMESTAMP values with the driver's DATETIME handling.
+        // Set this on the checked-out connection, including newly created ones.
+        await connection.query("SET time_zone = '+10:00'");
+        const [rows] = await connection.execute(sql, params || []);
+        return rows;
+    } finally {
+        connection.release();
+    }
 }
 
 module.exports = { pool, query };

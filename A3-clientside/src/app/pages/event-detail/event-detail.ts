@@ -3,7 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { WeatherService } from '../../services/weather.service';
 import { CharityEvent } from '../../models';
-import { formatDate, formatMoney, raisedPercent } from '../../formatters';
+import { formatDate, formatMoney, raisedPercent, eventDateKey, registrationOpen } from '../../formatters';
 
 /** One day of the Open-Meteo forecast, prepared for display. */
 interface WeatherDay {
@@ -48,6 +48,7 @@ export class EventDetail implements OnInit {
 
   protected readonly fmtDate = formatDate;
   protected readonly fmtMoney = formatMoney;
+  protected readonly registrationOpen = registrationOpen;
 
   /** True when the event is free entry (ticket price 0). */
   protected isFree(price: number): boolean {
@@ -85,7 +86,7 @@ export class EventDetail implements OnInit {
 
     this.weatherApi.getForecast(event.latitude, event.longitude).subscribe({
       next: (forecast) => {
-        const day = event.event_date.slice(0, 10);
+        const day = eventDateKey(event.event_date);
         const index = forecast.daily.time.indexOf(day);
         if (index === -1) {
           this.weatherNote.set('The forecast for this date is not available yet (Open-Meteo provides 16 days).');

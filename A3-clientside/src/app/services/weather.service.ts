@@ -26,7 +26,8 @@ export class WeatherService {
             latitude: String(latitude),
             longitude: String(longitude),
             daily: 'weather_code,temperature_2m_max,temperature_2m_min',
-            timezone: 'Australia/Brisbane'
+            timezone: 'Australia/Brisbane',
+            forecast_days: '16'
         };
         return this.http.get<WeatherForecast>('https://api.open-meteo.com/v1/forecast', { params });
     }

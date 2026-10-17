@@ -6,13 +6,13 @@
              [(ngModel)]="model().event_name" placeholder="e.g. Hope City Fun Run 5K">
     </div>
     <div class="form-field">
-      <label for="f-date">Starts *</label>
-      <input id="f-date" type="datetime-local" name="eventDate"
+      <label for="f-date">Starts (Brisbane / AEST) *</label>
+      <input id="f-date" type="datetime-local" name="eventDate" step="1"
              [(ngModel)]="model().event_date">
     </div>
     <div class="form-field">
-      <label for="f-end">Ends (optional)</label>
-      <input id="f-end" type="datetime-local" name="endDate"
+      <label for="f-end">Ends (Brisbane / AEST, optional)</label>
+      <input id="f-end" type="datetime-local" name="endDate" step="1"
              [(ngModel)]="model().end_date">
     </div>
     <div class="form-field">
@@ -86,8 +86,8 @@
     </div>
   </div>
 
-  @if (error()) {
-    <div class="message error" role="alert">{{ error() }}</div>
+  @if (validationError() || error()) {
+    <div class="message error" role="alert">{{ validationError() || error() }}</div>
   }
 
   <div class="form-actions">
