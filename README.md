@@ -1,156 +1,139 @@
-# PROG2002 Assessment 3 — Hearts United Charity Events
+# PROG2002 Assessment 3 Charity Events
 
-A complete dynamic website for the *Hearts United* charity: a public **client-side** site where
-visitors browse events and register to attend, plus a staff-only **admin-side** site where staff
-create, update and delete events. Both front-ends are Angular single-page applications that talk to
-a RESTful Node/Express API backed by a MySQL database.
+Hearts United is a charity events application with a public website, an event
+administration website, and an Express REST API backed by MySQL.
 
-**Team:** Boyu Liu (24832407) · Xiang Hu
+Team: Boyu Liu (24832407) and Xiang Hu (24832203).
+Shared repository: https://github.com/lbyyy139/PROG2002-A3-Charity-Events
 
----
+## Source and documentation
 
-## 1. Technology stack
-
-| Layer | Technology |
+| Path | Contents |
 |---|---|
-| Database | MySQL |
-| API | Node.js + Express |
-| Front-ends | **Angular 22** with **TypeScript** (two separate apps) |
-| Styling | HTML + CSS |
-| Third-party service | **Open-Meteo weather API** (forecast shown on the event detail page) |
+| A3-api/ | Express API, configuration template and SQL schema with seed data |
+| A3-clientside/ | Angular public website source |
+| A3-adminside/ | Angular administration website source |
+| tests/a3-requirements.test.cjs | API and date-validation regression tests |
+| docs/admin-side-architecture.md | Administration architecture |
+| docs/test-plan.md | Manual integration test checklist |
+| docs/release-notes-2026-10-18.md | Changes, validation and deployment notes |
+| reports/24832203A3-report.docx | Xiang Hu's individual project report |
+| PROG2002 A3 Report.docx | Boyu Liu's existing individual report |
 
-> Note: this project uses modern **Angular (v22)**, *not* the legacy **AngularJS (1.x)** framework.
+The two students use the same repository and each deploys the complete system
+to their own SCU cPanel account. GitHub is not a substitute for cPanel deployment.
 
----
+## Requirements
 
-## 2. Repository layout
+- For frontend builds, use Node 22.22.3, or another version accepted by the locked
+  Angular CLI (`^22.22.3 || ^24.15.0 || >=26.0.0`). Node 22.22.3 was used for validation.
+- MySQL 8 or a compatible MySQL server, plus npm.
+- Both frontends use modern Angular 22 and TypeScript, not AngularJS 1.x.
+  Eligibility for the assessment's AngularJS bonus must be confirmed with the tutor.
+- Authentication is outside the scope specified in the assessment brief.
 
-| Folder | Contents |
-|---|---|
-| `A3-api/` | Node/Express RESTful API and the MySQL SQL dump |
-| `A3-clientside/` | Public Angular app — browse, search, view details, register |
-| `A3-adminside/` | Staff Angular app — list, create, edit and delete events |
-| `A3-Submission/` | The three submission zip files |
-| `a3-screenshots/` | Screenshots used in the project report |
-| `PROG2002 A3 Report.docx` | The project report |
+## Database and API
 
----
+For a fresh local database, import `A3-api/charityevents_db.sql`.
+For cPanel, first select the empty database in phpMyAdmin and import
+`A3-api/charityevents_db_cpanel.sql`. Each SQL file contains the complete schema
+and seed data: 3 organisations, 5 categories, 11 events and 10 registrations.
+The scripts drop and recreate application tables; do not import over data you need.
 
-## 3. Prerequisites
+Copy `A3-api/db-config.example.js` to `A3-api/db-config.js` and enter your own
+database settings. The real configuration is intentionally excluded from Git and
+submission archives. Do not publish it.
 
-- Node.js 18 or newer (includes npm)
-- MySQL 8 or newer, with a database client (MySQL Workbench, phpMyAdmin, or the `mysql` CLI)
-
----
-
-## 4. Database setup
-
-1. Create an empty database, e.g. `charityevents_db`.
-2. Import the schema **and** the sample data:
-
-   ```
-   mysql -u <user> -p charityevents_db < A3-api/charityevents_db.sql
-   ```
-
-   The dump creates the tables `events`, `categories`, `organisations` and `registrations`.
-
-3. Configure the API credentials. A template is provided — **copy it and fill in your own values**:
-
-   ```
-   cd A3-api
-   copy db-config.example.js db-config.js
-   ```
-
-   Then edit `db-config.js` with your host, user, password and database name.
-
-> `db-config.js` holds real credentials, so it is intentionally excluded from version control via
-> `.gitignore`. **Never commit it.**
-
----
-
-## 5. Running the API
-
-```
+```sh
 cd A3-api
-npm install
+npm ci
 npm start
 ```
 
-The server listens on **port 3000**. To confirm it is up, open
-<http://localhost:3000/api/events> — you should receive a JSON array.
+The API uses `PORT` when supplied, otherwise 3000. Check
+http://localhost:3000/api/events. Events use Brisbane local time; the database
+connection and query session use UTC+10 consistently.
 
----
+## Local frontend development
 
-## 6. Running the front-ends
+For local development, set `apiUrl: 'http://localhost:3000'` in each app's
+`src/environments/environment.ts`. The committed empty value is intended for
+same-origin cPanel hosting, where requests resolve to `/api/...`.
 
-Open two terminals:
+Run the public app in one terminal:
 
-```
-cd A3-clientside        # public site
-npm install
-npm start
-```
-
-```
-cd A3-adminside         # staff-only site
-npm install
-npm start
+```sh
+cd A3-clientside
+npm ci
+npm start -- --port 4200
 ```
 
-Each command prints the local URL Angular is serving on (by default port 4200; Angular picks the
-next free port automatically if 4200 is already taken).
+Run the admin app in another:
 
-The **API must be running** for the front-ends to display data — all three must be up at once.
+```sh
+cd A3-adminside
+npm ci
+npm start -- --port 4201
+```
 
-The API base URL is set per app in `src/environments/environment.ts`. Change `apiUrl` there to point
-at your deployed API (for example when the site is running on the SCU cPanel server).
+Visit http://localhost:4200 and http://localhost:4201 respectively.
 
----
-
-## 7. API endpoints
+## API endpoints
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| GET | `/api/events` | All events for the public list page |
-| GET | `/api/events/all` | Every event regardless of status, with a registration count (admin list) |
-| GET | `/api/events/search` | Search/filter events |
-| GET | `/api/events/:id` | One event including its registrations |
-| POST | `/api/events` | Create a new event |
-| PUT | `/api/events/:id` | Update an existing event |
-| DELETE | `/api/events/:id` | Delete an event (blocked with HTTP 409 if registrations exist) |
-| POST | `/api/events/:id/registrations` | Register a visitor for an event |
-| GET | `/api/categories` | Categories for dropdowns |
-| GET | `/api/organisations` | Organisations for dropdowns |
+| GET | /api/events | Upcoming, non-suspended events |
+| GET | /api/events/all | Every event, with registration counts |
+| GET | /api/events/search | Filter by date, location and categoryId |
+| GET | /api/events/:id | Public event details and registrations |
+| GET | /api/admin/events/:id | Admin details, including suspended events |
+| POST | /api/events | Create an event |
+| PUT | /api/events/:id | Update an event |
+| DELETE | /api/events/:id | Delete an event only if it has no registrations |
+| POST | /api/events/:id/registrations | Register once per email per event |
+| GET | /api/categories | Categories for dropdowns |
+| GET | /api/organisations | Organisations for dropdowns |
 
-**Why DELETE can fail:** an event that still has registrations cannot be removed — the API answers
-`409 Conflict` so that booking data is never silently destroyed. The admin site shows this message
-to the user. This protects referential integrity at the application level.
+Registrations are ordered newest first. Duplicate registrations and deletion of
+an event with registrations return HTTP 409. Invalid input returns HTTP 400.
+The admin detail route is a data-selection route, not an authentication boundary.
 
----
+## Production build and cPanel deployment
 
-## 8. Deployment (SCU cPanel)
+1. Set `apiUrl: ''` in both environment files when the API and frontends share
+   the student's own domain. Do not copy another student's absolute API URL.
+2. In `A3-clientside`, run `npm ci` and `npm run build`.
+3. In `A3-adminside`, run `npm ci` and `npm run build -- --base-href /admin/`.
+4. Upload the public build's `dist/A3-clientside/browser/` contents to
+   `public_html/`; upload the admin build's `dist/A3-adminside/browser/` contents
+   to `public_html/admin/`. Retain the server routing configuration.
+5. Deploy the API to the Node application's directory, install dependencies,
+   configure the student's own database credentials, use `server.js` as startup
+   file, and restart the application. Keep the `/api` mapping managed by cPanel.
+6. Verify the APIs return JSON and that refreshing `/admin/edit/11` loads the
+   admin form. Source ZIP files are for assessment submission, not static upload.
 
-1. Deploy `A3-api/` as a Node.js application and run `npm install` then `npm start` on the server.
-2. Build each front-end with `npm run build`, which produces a `dist/` folder.
-3. Upload the contents of `dist/<app>/browser/` into the public web directory.
-4. Update `apiUrl` in each app's `environment.ts` to the deployed API URL **before** building.
+See `a3-cpanel-full-guide.md` for the cPanel walkthrough. A Git push does not
+automatically update either student's live website.
 
-Each team member deploys to their own cPanel account, as required by the assessment brief.
+## Regression tests
 
----
+Install the API and admin dependencies first, then run from the repository root:
 
-## 9. Weather API
+```sh
+node --test tests/a3-requirements.test.cjs
+```
 
-The event detail page calls the **Open-Meteo** forecast service using the event's stored
-`latitude` and `longitude`. It needs no API key. See `A3-clientside/src/app/services/weather.service.ts`.
+These tests exercise HTTP routes with a database test double and pure validation
+and timezone helpers. They do not replace real MySQL write-operation testing.
+Use `docs/test-plan.md` for the remaining manual integration checks.
 
----
+## Assessment files
 
-## 10. Assessment deliverables
+Each student submits their own three source archives, project documentation and
+the shared GitHub link. Xiang Hu's prepared files use the `24832203A3-` prefix.
+If the tutor uses a different institutional username convention, change only the
+archive prefix before submission. Both complete SQL variants are in the API ZIP.
 
-| Deliverable | File |
-|---|---|
-| Source code zips | `A3-Submission/24832407A3-{api,clientside,adminside}.zip` |
-| Project report | `PROG2002 A3 Report.docx` |
-| Demo video | recorded separately (see `a3-video-script.md`) |
-| Peer evaluation form | completed individually and emailed to the tutor |
+The demo video and confidential peer evaluation are prepared separately by each
+student. They are not included in the generated submission folder.

@@ -8,7 +8,7 @@
 | Name | Student ID | GitHub |
 |---|---|---|
 | Boyu Liu | 24832407 | `lbyyy139` |
-| Xiang Hu | — | `xiang-123-art` |
+| Xiang Hu | 24832203 | `xiang-123-art` |
 
 The work is split **50 / 50**. Each member owns a full vertical slice of the
 application: they designed, coded, documented and are able to explain their own

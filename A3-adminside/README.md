@@ -1,21 +1,36 @@
-# Hearts United Admin Console (A3 admin-side website)
+# Charity Events Administration Website
 
-PROG2002 Assignment 3 - admin-side website built with **Angular 22 + TypeScript**.
-Group project - Boyu Liu (24832407). Authentication is not required (per the brief).
+PROG2002 A3. Team: Boyu Liu (24832407) and Xiang Hu (24832203).
+Angular 22 and TypeScript source; Node 22.22.3 was used for builds.
+
+## Run locally
+
+Start the API on http://localhost:3000. Set `apiUrl` to that address in
+`src/environments/environment.ts`, then run:
+
+```sh
+npm ci
+npm start -- --port 4201
+```
+
+## Build for cPanel
+
+Restore `apiUrl: ''` so the app uses its own domain's `/api` endpoints, then run:
+
+```sh
+npm run build -- --base-href /admin/
+```
+
+Upload the contents of `dist/A3-adminside/browser/` to
+`public_html/admin/`. Configure SPA fallback routing and
+preserve the cPanel Node `/api` mapping. The ZIP contains source, not node_modules
+or compiled deployment files.
 
 ## Features
-- **List**: every event regardless of status (Upcoming / Past / Suspended) with
-  registration counts (`GET /api/events/all`)
-- **New**: form that creates an event (`POST /api/events`), with validation
-- **Edit**: form pre-filled from `GET /api/events/:id`, showing the registrations
-  recorded for the event; saves via `PUT /api/events/:id`
-- **Delete**: two-click confirmation; the API blocks deletion with HTTP 409 when
-  registrations exist and the reason is shown to the staff member
 
-## How to run
-1. Start the API first (see `A3-api/README.md`) at http://localhost:3000.
-2. `npm install`
-3. `npm start` - the admin site runs at http://localhost:4201
-   (`ng serve --port 4201`)
-
-The API address is configured in `src/environments/environment.ts`.
+The dashboard lists all statuses, supports search and sorting, and provides create,
+edit and delete actions. The edit page uses GET /api/admin/events/:id so suspended
+events remain editable. Both forms validate before submission. Existing registrations
+are shown on the edit page; the API blocks deletion when registrations exist.
+All event dates are displayed and edited in Brisbane / AEST time.
+Authentication is not required by the assessment brief.

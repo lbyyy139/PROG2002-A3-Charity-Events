@@ -67,7 +67,7 @@ Defined in `src/app/app.routes.ts`:
 | Method | Endpoint | Used by | Notes |
 |---|---|---|---|
 | GET | `/api/events/all` | Dashboard | Returns **all** events plus `registration_count` |
-| GET | `/api/events/:id` | Edit page | Includes the event's registrations |
+| GET | `/api/admin/events/:id` | Edit page | Includes suspended events and their registrations |
 | POST | `/api/events` | New event page | Returns the new event id |
 | PUT | `/api/events/:id` | Edit page | Full replacement of the mutable fields |
 | DELETE | `/api/events/:id` | Dashboard delete | Returns 409 if registrations exist |
