@@ -52,7 +52,7 @@ Defined in `src/app/app.routes.ts`:
 
 | File | Responsibility |
 |---|---|
-| `pages/dashboard/dashboard.*` | Lists every event including past and suspended ones, with the registration count, edit link and delete action |
+| `pages/dashboard/dashboard.*` | Lists every event including past and suspended ones, with the registration count, edit link, delete action, plus in-table search and sorting |
 | `pages/event-new/event-new.*` | Creates an event; validates then POSTs |
 | `pages/event-edit/event-edit.*` | Loads an existing event, pre-fills the form, validates then PUTs |
 | `shared/event-form/event-form.*` | The form itself, shared by create and edit |
@@ -118,6 +118,32 @@ immediate feedback; the server-side check exists because anyone can call the API
 directly and skip the interface entirely.
 
 ---
+
+## 6b. In-table search and sorting
+
+The toolbar above the table filters and orders the rows already loaded in
+memory. Both live in `dashboard.ts` using signals and a `computed`:
+
+```ts
+protected readonly searchTerm = signal('');
+protected readonly sortKey   = signal<SortKey>('date-desc');
+
+protected readonly visibleEvents = computed<CharityEvent[]>(() => { /* filter + sort */ });
+```
+
+Why it is done this way:
+
+- **No extra requests.** The list is fetched once in `load()`. Typing in the
+  search box updates a signal, the `computed` re-evaluates, and Angular
+  re-renders. Nothing hits the network, which is why the response stays instant.
+- **One source of truth.** `events()` always holds everything the API returned;
+  `visibleEvents()` is derived from it. Clearing the filter can never lose data.
+- **Search is case-insensitive** and matches four fields at once: event name,
+  location, category and organisation, because that is what staff search on.
+
+Sort options: newest first (default), oldest first, name A-Z, and most
+registrations. A counter shows `Showing X of Y` so the user always knows rows are
+hidden by a filter rather than missing.
 
 ## 7. Delete flow and the 409 rule
 

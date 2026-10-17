@@ -152,6 +152,20 @@ DELETE /api/events/:id                删除活动           ← 列表删除按
 
 > The edit page reuses the same shared form component, pre-filled from GET /api/events/:id. That reuse is why create and edit always stay consistent.
 
+▶ 操作：在搜索框输入一个关键词（如 `run`）→ 展示列表即时收缩。
+
+> Above the table I added search and sorting. The search is case-insensitive and matches the event name, location, category and organisation at once — those are the fields staff actually search on.
+>
+> Notice the counter: it says "Showing X of 11", so the user always knows the other rows are hidden by the filter rather than missing.
+
+💻 代码（指 computed）：
+
+> Filtering happens in memory through an Angular computed value. The list is fetched once; typing updates a signal and the view re-renders. If I open the Network tab you can see no new request is made — that keeps it instant even with many events.
+
+▶ 操作：切换排序（Newest first → Most registrations）→ 点 Clear。
+
+> Four orderings are available: newest first, oldest first, name A to Z, and most registrations. Clear resets both the filter and the order.
+
 ▶ 操作：点 Delete → 指出需要**再点一次**确认。
 
 > Deletion needs two clicks: the first click arms the confirmation, the second actually deletes. This prevents an accidental click from destroying data.
@@ -207,5 +221,8 @@ DELETE /api/events/:id                删除活动           ← 列表删除按
 **Q7: 为什么两个前端要分开部署？**
 > They serve different users and can be restricted independently. The admin site lives in its own subfolder, and both are built separately, so one can be updated without touching the other.
 
-**Q8: 你们俩怎么协作？**
+**Q8: 为什么筛选在前端做，不在后端加个搜索接口？**
+> The admin list is already fully loaded, and the dataset is small, so filtering in memory avoids a network round trip and the interface responds instantly. It also keeps one source of truth: the full list stays in the signal and the displayed rows are derived from it, so clearing the filter can never lose data. For a very large dataset I would switch to a server-side search endpoint instead.
+
+**Q9: 你们俩怎么协作？**
 > We share one GitHub repository and commit our own work to it regularly, which gives a visible record of the project. We split the system vertically: Boyu owns the database, API and public site; I own the admin site, testing and deployment.

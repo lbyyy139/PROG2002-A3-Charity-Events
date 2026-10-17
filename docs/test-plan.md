@@ -78,6 +78,17 @@ whole list before submitting, and again after any change to the API.
 | 3.11 | Press Delete twice on an event with **no** registrations | Event removed from the list | ☐ |
 | 3.12 | Press Delete twice on an event **with** registrations | Blocked, 409 message shown, event remains | ☐ |
 | 3.13 | Open `/admin/edit/abc` | "Invalid event id." — no request sent | ☐ |
+| 3.14 | Type "run" in the dashboard search | Only events whose name/location/category/organisation contains it remain | ☐ |
+| 3.15 | Search is case-insensitive ("RUN" gives the same result) | Same rows as 3.14 | ☐ |
+| 3.16 | Type a term with no match | "No event matches the current search." message, no table | ☐ |
+| 3.17 | Check the counter next to the toolbar | Reads `Showing X of 11` | ☐ |
+| 3.18 | Sort by "Name (A-Z)" | Rows ordered alphabetically | ☐ |
+| 3.19 | Sort by "Oldest first" | Earliest event first | ☐ |
+| 3.20 | Sort by "Most registrations" | Highest registration count first | ☐ |
+| 3.21 | Combine a search term with a sort order | Both applied together | ☐ |
+| 3.22 | Press Clear | Filter and sort reset to newest-first, all events shown | ☐ |
+| 3.23 | Type in the search box, watch the Network tab | **No** additional HTTP request is made (filtering is in memory) | ☐ |
+| 3.24 | Delete a row while a filter is active | Row disappears, filter term is kept | ☐ |
 
 ---
 

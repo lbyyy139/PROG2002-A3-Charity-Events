@@ -22,7 +22,30 @@
   } @else if (error()) {
     <div class="message error" role="alert">{{ error() }}</div>
   } @else {
-    <div class="table-card">
+    <div class="dashboard-toolbar">
+      <input type="search" class="toolbar-search" name="dashboardSearch"
+             placeholder="Search by name, location, category or organisation"
+             aria-label="Search events"
+             [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)">
+      <select class="toolbar-sort" name="dashboardSort" aria-label="Sort events"
+              [ngModel]="sortKey()" (ngModelChange)="sortKey.set($event)">
+        <option value="date-desc">Newest first</option>
+        <option value="date-asc">Oldest first</option>
+        <option value="name-asc">Name (A-Z)</option>
+        <option value="registrations-desc">Most registrations</option>
+      </select>
+      @if (hasFilters()) {
+        <button type="button" class="btn btn-small btn-outline" (click)="clearFilters()">Clear</button>
+      }
+      <span class="toolbar-count">Showing {{ visibleEvents().length }} of {{ events().length }}</span>
+    </div>
+
+    @if (visibleEvents().length === 0) {
+      <div class="message info" role="status">
+        No event matches the current search. Try another term or clear the filter.
+      </div>
+    } @else {
+      <div class="table-card">
       <table class="admin-table">
         <thead>
           <tr>
@@ -39,7 +62,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (event of events(); track event.event_id) {
+          @for (event of visibleEvents(); track event.event_id) {
             <tr>
               <td>{{ event.event_id }}</td>
               <td><strong>{{ event.event_name }}</strong><br>
@@ -74,6 +97,7 @@
           }
         </tbody>
       </table>
-    </div>
+      </div>
+    }
   }
 </main>

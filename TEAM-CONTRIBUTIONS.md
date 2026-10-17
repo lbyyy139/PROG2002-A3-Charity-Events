@@ -43,7 +43,9 @@ both front ends) to their **own** SCU cPanel account, as required by the brief.
 **Admin-side Angular app (`A3-adminside/`)**
 
 - `dashboard` — full list of every event with its registration count, plus
-  edit and delete actions (two-click delete confirmation)
+  edit and delete actions (two-click delete confirmation); in-table
+  case-insensitive search and four sort orders, implemented with signals and a
+  derived (`computed`) list so filtering never triggers another HTTP request
 - `event-new` — create an event
 - `event-edit` — update an existing event
 - `shared/event-form` — template-driven form (`[(ngModel)]`) shared by create and
