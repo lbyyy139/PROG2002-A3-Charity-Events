@@ -46,8 +46,8 @@ both front ends) to their **own** SCU cPanel account, as required by the brief.
   edit and delete actions (two-click delete confirmation)
 - `event-new` — create an event
 - `event-edit` — update an existing event
-- `shared/event-form` — reactive form shared by create and edit, with validation
-  and server-side error handling
+- `shared/event-form` — template-driven form (`[(ngModel)]`) shared by create and
+  edit, with client-side validation and server-side error handling
 - `services/api.service.ts`, `models.ts`, `formatters.ts`
 
 **Testing and quality assurance**
