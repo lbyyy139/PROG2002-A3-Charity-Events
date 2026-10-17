@@ -20,6 +20,16 @@ video-script.md
 a3-brief-extracted.txt
 a3-deployment-guide.md
 
+# Build tooling and upload artefacts (local only, not part of the source code)
+.build-node/
+.playwright-cli/
+api-upload.zip
+deploy/
+deploy-package/
+
+# Unpacked docx working folders
+*_unpacked/
+
 # OS / editor noise
 .DS_Store
 Thumbs.db
